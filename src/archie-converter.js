@@ -45,7 +45,7 @@ export default class ArchieConverter {
                 var style_config = {};
                 if (options.preserve_styles) {
                     if (_.include(options.preserve_styles, 'bold')) {
-                        style_config['font-weight:bold'] = {
+                        style_config['font-weight:700'] = {
                             className: 'g-doc-bold',
                             tag: 'strong'
                         };
@@ -125,11 +125,20 @@ export default class ArchieConverter {
                                             tag.next !== null &&
                                             tag.prev === null
                                         ) {
-                                            // partial line — key is formatted but text is not
+                                            // partial line — key and value is formatted. This will break your type if you format your key in gdocs.
                                             log(
-                                                'partial line, key formatted but text is not',
+                                                'partial line, key formatted but text is !',
                                                 component
                                             );
+
+                                            component.tags = _.unique(
+                                                _.flatten(
+                                                  _.map(tag_styles, function(style) {
+                                                    return style_config[style].tag;
+                                                  }),
+                                                ),
+                                              );
+
                                         } else {
                                             // entire value, use class
                                             component.tags = _.unique(
